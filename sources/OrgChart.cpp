@@ -32,7 +32,7 @@ namespace ariel {
         }
         if(!built)
         {
-            throw std::logic_error("father not in chart");
+            throw std::logic_error("employer doesn't exist");
         }
         return *this;
     }
