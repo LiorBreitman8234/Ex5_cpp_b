@@ -8,18 +8,19 @@
 #include <string>
 #include <iostream>
 #include <utility>
+#include <exception>
 #include <queue>
 #include <stack>
 namespace ariel{
     class OrgChart{
         Node<std::string>* root;
-    public:
-        using Iterator = std::vector<std::string>::iterator;
         std::vector<std::string> order;
         std::vector<std::string> pre_order;
         std::vector<std::string> reverseOrder;
-
         std::vector<Node<std::string>*> nodes;
+    public:
+        using Iterator = std::vector<std::string>::iterator;
+
         OrgChart(){this->root = nullptr;};
         void preOrder(Node<std::string>* head);
         void BFS();

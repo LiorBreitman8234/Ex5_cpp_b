@@ -10,7 +10,7 @@ namespace ariel{
     template<typename T>
     class Node{
     public:
-        int color; //used for bfs
+        int color{}; //used for bfs
         T data;
         Node* parent;
         Node* next;

@@ -17,15 +17,23 @@ namespace ariel {
     }
 
     OrgChart &OrgChart::add_sub(const std::string &father, std::string child) {
-        Node<std::string> *fatherNode;
-        for (auto node: nodes) {
+        if(this->root == nullptr)
+        {
+            throw std::logic_error("can't add sub before root");
+        }
+        bool built = false;
+        for (auto* node: nodes) {
             if (node->data == father) {
-                fatherNode = node;
+                auto *childNode = new Node<std::string>(child, node);
+                this->nodes.push_back(childNode);
+                built = true;
                 break;
             }
         }
-        auto *childNode = new Node<std::string>(child, fatherNode);
-        this->nodes.push_back(childNode);
+        if(!built)
+        {
+            throw std::logic_error("father not in chart");
+        }
         return *this;
     }
 
@@ -76,7 +84,7 @@ namespace ariel {
 
     std::ostream &operator<<(std::ostream &os, OrgChart &chart) {
         chart.begin_level_order();
-        for (auto node: chart.nodes) {
+        for (auto* node: chart.nodes) {
             if (node->next == nullptr) {
                 std::cout << node->data << std::endl;
             }
@@ -94,7 +102,7 @@ namespace ariel {
             return;
         }
         pre_order.push_back(head->data);
-        for(auto child: head->children)
+        for(auto* child: head->children)
         {
             preOrder(child);
         }
@@ -120,7 +128,7 @@ namespace ariel {
                 v = v->next;
             }
             v = keep;
-            for (auto child: v->children) {
+            for (auto* child: v->children) {
                 if (child->color == 0) {
                     bfsQueue.push(child);
                     order.push_back(child->data);
@@ -131,7 +139,7 @@ namespace ariel {
             }
             v->color = 2;
         }
-        for (auto node: toReset) {
+        for (auto* node: toReset) {
             node->color = 0;
         }
     }
@@ -159,15 +167,15 @@ namespace ariel {
             v = keep;
             for(int i = (int)v->children.size()-1; i > 0 ;i--)
             {
-                if(v->children.at(i)->color == 0)
+                if(v->children.at((unsigned long)i)->color == 0)
                 {
-                    bfsQueue.push(v->children.at(i));
-                    toReset.push_back(v->children.at(i));
-                    rlo.push(v->children.at(i));
-                    v->children.at(i)->color = 1;
+                    bfsQueue.push(v->children.at((unsigned long)i));
+                    toReset.push_back(v->children.at((unsigned long)i));
+                    rlo.push(v->children.at((unsigned long)i));
+                    v->children.at((unsigned long)i)->color = 1;
                 }
             }
-            if(v->children.size() != 0 && v->children.at(0)->color == 0)
+            if(!v->children.empty() && v->children.at(0)->color == 0)
             {
                 bfsQueue.push(v->children.at(0));
                 toReset.push_back(v->children.at(0));
@@ -177,7 +185,7 @@ namespace ariel {
 
             v->color = 2;
         }
-        for (auto node: toReset) {
+        for (auto* node: toReset) {
             node->color = 0;
         }
         while(!rlo.empty())
