@@ -11,8 +11,24 @@ namespace ariel {
         if (root != nullptr) {
             newRoot->children = root->children;
         }
+        auto* oldRoot = this->root;
+
+        if(this->root != nullptr)
+        {
+            for(auto & node : this->nodes)
+            {
+                if(node == this->root)
+                {
+                    node = newRoot;
+                }
+            }
+            delete oldRoot;
+        }
+        else
+        {
+            this->nodes.push_back(newRoot);
+        }
         this->root = newRoot;
-        this->nodes.push_back(root);
         return *this;
     }
 
@@ -38,6 +54,10 @@ namespace ariel {
     }
 
     OrgChart::Iterator OrgChart::begin_level_order() {
+        if(this->nodes.empty())
+        {
+            throw std::logic_error("chart is empty!");
+        }
         order.clear();
         BFS();
         return order.begin();
@@ -45,30 +65,50 @@ namespace ariel {
 
 
     OrgChart::Iterator OrgChart::end_level_order() {
+        if(this->nodes.empty())
+        {
+            throw std::logic_error("chart is empty!");
+        }
         begin_level_order();
         return order.end();
 
     }
 
     OrgChart::Iterator OrgChart::begin_preorder() {
+        if(this->nodes.empty())
+        {
+            throw std::logic_error("chart is empty!");
+        }
         pre_order.clear();
         preOrder(this->root);
         return pre_order.begin();
     }
 
     OrgChart::Iterator OrgChart::begin_reverse_order() {
+        if(this->nodes.empty())
+        {
+            throw std::logic_error("chart is empty!");
+        }
         reverseOrder.clear();
         ReverseOrder();
         return reverseOrder.begin();
     }
 
     OrgChart::Iterator OrgChart::end_preorder() {
+        if(this->nodes.empty())
+        {
+            throw std::logic_error("chart is empty!");
+        }
         pre_order.clear();
         preOrder(this->root);
         return pre_order.end();
     }
 
     OrgChart::Iterator OrgChart::reverse_order() {
+        if(this->nodes.empty())
+        {
+            throw std::logic_error("chart is empty!");
+        }
         reverseOrder.clear();
         ReverseOrder();
         return reverseOrder.end();
@@ -207,6 +247,104 @@ namespace ariel {
             Node *lastChild = parent->children.back();
             lastChild->next = this;
         }
+    }
+
+    OrgChart::~OrgChart()
+    {
+        size_t i = 0;
+        while(!this->nodes.empty())
+        {
+            auto* currNode = this->nodes.at(i);
+            this->nodes.erase(this->nodes.begin());
+            delete currNode;
+        }
+    }
+
+    OrgChart::OrgChart(const OrgChart &other) {
+        this->root = nullptr;
+        for(auto* node: other.nodes)
+        {
+            if(other.root == node)
+            {
+                this->add_root(node->data);
+            }
+        }
+        for(auto* node: other.nodes)
+        {
+            if(other.root != node)
+            {
+                this->add_sub(node->data,node->parent->data);
+            }
+        }
+
+
+    }
+
+    OrgChart &OrgChart::operator=(const OrgChart& other) {
+        if(&other == this)
+        {
+            return *this;
+        }
+        for(auto* node: other.nodes)
+        {
+            if(other.root == node)
+            {
+                this->add_root(node->data);
+            }
+        }
+        for(auto* node: other.nodes)
+        {
+            if(other.root != node)
+            {
+                this->add_sub(node->data,node->parent->data);
+            }
+        }
+        return *this;
+    }
+
+    bool OrgChart::operator==(const OrgChart &other) {
+        if(this->root != other.root)
+        {
+            return false;
+        }
+        for(auto* node: other.nodes)
+        {
+            for(auto* selfNode: this->nodes)
+            {
+                if(selfNode == node){
+                    break;
+                }
+                return false;
+            }
+        }
+        return true;
+    }
+
+    OrgChart::OrgChart(OrgChart &&other) noexcept {
+        try{
+            *this = other;
+            other.root = nullptr;
+            other.nodes.clear();
+        }
+        catch (std::exception& e)
+        {
+            std::cout << e.what();
+        }
+
+    }
+
+    OrgChart &OrgChart::operator=(OrgChart &&other)  noexcept {
+        try{
+            *this = other;
+            other.root = nullptr;
+            other.nodes.clear();
+            return *this;
+        }
+        catch (std::exception& e)
+        {
+            std::cout << e.what();
+        }
+        return *this;
     }
 
 }

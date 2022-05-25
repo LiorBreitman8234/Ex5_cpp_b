@@ -22,6 +22,9 @@ namespace ariel{
         using Iterator = std::vector<std::string>::iterator;
 
         OrgChart(){this->root = nullptr;};
+        OrgChart(OrgChart const &other);
+        OrgChart(OrgChart&& other) noexcept;
+        ~OrgChart();
         void preOrder(Node<std::string>* head);
         void BFS();
         void ReverseOrder();
@@ -39,6 +42,9 @@ namespace ariel{
         Iterator begin();
         Iterator end();
         friend std::ostream &operator<<(std::ostream &os, OrgChart &chart);
+        OrgChart& operator=(const OrgChart& other);
+        bool operator==(const OrgChart& other);
+        OrgChart& operator=(OrgChart&& other) noexcept;
     };
 }
 #endif //EX5_CPP_A_ORGCHART_HPP
