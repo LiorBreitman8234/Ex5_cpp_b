@@ -12,12 +12,13 @@ namespace ariel{
     public:
         int color{}; //used for bfs
         T data;
+        int level{};
         Node* parent;
         Node* next;
         std::vector<Node*> children;
         explicit Node(T& data){this->color = 0;this->data = data;this->next = nullptr; this->parent = nullptr; this->children = std::vector<Node*>();};
         Node (T& data, Node* parent);
-
+        void setLevel(int newLevel){this->level = newLevel;};
     };
 
 

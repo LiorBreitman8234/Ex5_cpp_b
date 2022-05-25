@@ -11,6 +11,7 @@ namespace ariel {
         if (root != nullptr) {
             newRoot->children = root->children;
         }
+        newRoot->level = 0;
         auto* oldRoot = this->root;
 
         if(this->root != nullptr)
@@ -41,6 +42,7 @@ namespace ariel {
         for (auto* node: nodes) {
             if (node->data == father) {
                 auto *childNode = new Node<std::string>(child, node);
+                childNode->level = node->level + 1;
                 this->nodes.push_back(childNode);
                 built = true;
                 break;
@@ -123,15 +125,34 @@ namespace ariel {
     }
 
     std::ostream &operator<<(std::ostream &os, OrgChart &chart) {
-        chart.begin_level_order();
-        for (auto* node: chart.nodes) {
-            if (node->next == nullptr) {
-                std::cout << node->data << std::endl;
-            }
-            else
+        int maxLevel = 0;
+        for(auto* node: chart.nodes)
+        {
+            if(node->level > maxLevel)
             {
-                std::cout<< node->data << "---";
+                maxLevel = node->level;
             }
+        }
+        std::vector<std::vector<std::string>> levels = std::vector<std::vector<std::string>>((size_t)(maxLevel + 1));
+        for(auto* node: chart.nodes)
+        {
+
+            levels.at((size_t)node->level).push_back(node->data);
+        }
+        for(size_t i = 0; i < maxLevel + 1;i++)
+        {
+            for(size_t j = 0; j < levels.at(i).size();j++)
+            {
+                if(j == 0)
+                {
+                    std::cout << levels.at(i).at(j);
+                }
+                else
+                {
+                    std::cout << "----" << levels.at(i).at(j);
+                }
+            }
+            std::cout <<std::endl;
         }
         return os;
     }
